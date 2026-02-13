@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A Special Question</title>
+<meta name="description" content="Something special is waiting for you...">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Cormorant+Garamond:wght@300;400;500&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+    /* ---------- Original Styles ---------- */
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{
+        font-family: 'Montserrat', sans-serif;
+        background: linear-gradient(135deg, #1a0a0f 0%, #3d1520 25%, #5c1f33 50%, #3d1520 75%, #1a0a0f 100%);
+        background-size: 400% 400%;
+        animation: gradientShift 15s ease infinite;
+        min-height: 100vh;
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+        justify-content:center;
+        padding:20px;
+        overflow-x:hidden;
+        position:relative;
+    }
+    @keyframes gradientShift{0%,100%{background-position:0% 50%;}50%{background-position:100% 50%;}}
+    .particles,.rose-bg,.flower-bg{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1;}
+    .particle{position:absolute;width:3px;height:3px;background:radial-gradient(circle,#ffd700 0%,transparent 70%);border-radius:50%;animation:particleFloat 20s infinite;opacity:0;}
+    @keyframes particleFloat{0%{transform:translateY(100vh) translateX(0) scale(0);opacity:0;}10%{opacity:1;}90%{opacity:1;}100%{transform:translateY(-100px) translateX(100px) scale(1);opacity:0;}}
+    .rose-petal{position:absolute;font-size:40px;animation:petalFall 15s infinite;opacity:0;z-index:1;}
+    @keyframes petalFall{0%{transform:translateY(-50px) rotate(0deg);opacity:0;}10%{opacity:0.6;}90%{opacity:0.6;}100%{transform:translateY(100vh) rotate(360deg);opacity:0;}}
+    
+    /* Fixed flower styling - stay in background */
+    .flower{
+        position:absolute;
+        opacity:0;
+        animation:flowerFloat 8s ease-in-out forwards;
+        z-index:1;
+        pointer-events:none;
+    }
+    @keyframes flowerFloat{
+        0%{opacity:0;transform:translateY(100vh) rotate(0deg) scale(0.5);}
+        20%{opacity:0.4;}
+        80%{opacity:0.4;}
+        100%{opacity:0;transform:translateY(-100px) rotate(180deg) scale(1);}
+    }
+    
+    .container{
+        max-width:700px;width:100%;background:rgba(255,255,255,0.03);backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px);
+        border:2px solid rgba(255,215,0,0.2);border-radius:40px;padding:60px 50px;
+        box-shadow:0 30px 90px rgba(255,20,147,0.4),0 0 100px rgba(255,215,0,0.1), inset 0 0 80px rgba(255,255,255,0.02);
+        text-align:center;position:relative;z-index:10;animation:fadeInUp 1.2s ease-out;
+    }
+    @keyframes fadeInUp{from{opacity:0;transform:translateY(60px);}to{opacity:1;transform:translateY(0);}}
+    .corner-decoration{position:absolute;width:80px;height:80px;border:2px solid rgba(255,215,0,0.3);pointer-events:none;}
+    .corner-decoration.top-left{top:-2px;left:-2px;border-right:none;border-bottom:none;border-radius:40px 0 0 0;}
+    .corner-decoration.top-right{top:-2px;right:-2px;border-left:none;border-bottom:none;border-radius:0 40px 0 0;}
+    .corner-decoration.bottom-left{bottom:-2px;left:-2px;border-right:none;border-top:none;border-radius:0 0 0 40px;}
+    .corner-decoration.bottom-right{bottom:-2px;right:-2px;border-left:none;border-top:none;border-radius:0 0 40px 0;}
+    .heart-icon{font-size:100px;background:linear-gradient(135deg,#ff6b9d 0%,#ffa07a 50%,#ffd700 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:heartPulse 2s ease-in-out infinite;display:inline-block;margin-bottom:30px;filter:drop-shadow(0 0 20px rgba(255,107,157,0.6));}
+    @keyframes heartPulse{0%,100%{transform:scale(1);filter:drop-shadow(0 0 20px rgba(255,107,157,0.6));}50%{transform:scale(1.15);filter:drop-shadow(0 0 40px rgba(255,107,157,0.9));}}
+    h1{font-family:'Playfair Display',serif;font-size:clamp(32px,5vw,52px);font-weight:600;background:linear-gradient(135deg,#fff 0%,#ffd700 50%,#ffb6d9 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:30px;letter-spacing:1px;line-height:1.3;text-shadow:0 0 30px rgba(255,215,0,0.3);}
+    .subtitle{font-family:'Cormorant Garamond',serif;font-size:clamp(18px,3vw,24px);color:#ffd4e5;margin-bottom:35px;font-weight:300;letter-spacing:2px;text-transform:uppercase;opacity:0.9;}
+    .love-message{background:linear-gradient(135deg,rgba(255,215,0,0.08) 0%,rgba(255,182,217,0.08) 100%);border:1px solid rgba(255,215,0,0.25);border-radius:25px;padding:35px 30px;margin:40px 0;position:relative;overflow:hidden;}
+    .love-message::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.1),transparent);animation:shimmer 3s infinite;}
+    @keyframes shimmer{0%{left:-100%;}100%{left:100%;}}
+    .love-message p{font-family:'Cormorant Garamond',serif;font-size:clamp(16px,2.5vw,22px);color:#ffe4f0;line-height:1.8;margin:15px 0;font-weight:400;position:relative;z-index:1;}
+    .love-message .highlight{color:#ffd700;font-weight:500;text-shadow:0 0 20px rgba(255,215,0,0.5);}
+    .divider{width:150px;height:2px;background:linear-gradient(90deg,transparent,#ffd700,transparent);margin:30px auto;position:relative;}
+    .divider::before{content:'✦';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#ffd700;font-size:20px;background:#1a0a0f;padding:0 10px;}
+    .question{font-family:'Playfair Display',serif;font-size:clamp(20px,4vw,28px);color:#fff;margin:35px 0;font-weight:500;letter-spacing:0.5px;}
+    .button-container{margin:50px 0 30px 0;display:flex;gap:20px;flex-wrap:wrap;justify-content:center;align-items:center;}
+    button{padding:18px 50px;font-size:clamp(16px,3vw,20px);font-weight:500;font-family:'Montserrat',sans-serif;letter-spacing:1px;border:none;border-radius:50px;cursor:pointer;transition:all 0.4s cubic-bezier(0.4,0,0.2,1);position:relative;overflow:hidden;text-transform:uppercase;}
+    .yes-btn{background:linear-gradient(135deg,#ff6b9d 0%,#ff1493 50%,#c71585 100%);color:white;box-shadow:0 10px 30px rgba(255,20,147,0.5),0 0 50px rgba(255,107,157,0.3);border:2px solid rgba(255,215,0,0.3);}
+    .yes-btn::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.3),transparent);transition:left 0.5s;}
+    .yes-btn:hover::before{left:100%;}
+    .yes-btn:hover{transform:translateY(-3px) scale(1.05);box-shadow:0 15px 40px rgba(255,20,147,0.7),0 0 80px rgba(255,107,157,0.5);}
+    .no-btn{background:rgba(255,255,255,0.05);color:#ffd4e5;border:2px solid rgba(255,255,255,0.2);backdrop-filter:blur(10px);}
+    .no-btn:hover{transform:scale(0.95);background:rgba(255,255,255,0.02);}
+    .success-container{display:none;animation:successAppear 0.8s ease-out;}
+    @keyframes successAppear{from{opacity:0;transform:scale(0.8);}to{opacity:1;transform:scale(1);}}
+    .success-message{font-family:'Playfair Display',serif;font-size:clamp(24px,5vw,38px);background:linear-gradient(135deg,#fff 0%,#ffd700 50%,#ff6b9d 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:600;margin:30px 0;line-height:1.5;}
+    .success-subtext{font-family:'Cormorant Garamond',serif;font-size:clamp(18px,3vw,24px);color:#ffe4f0;margin:25px 0;line-height:1.8;}
+    .roses{font-size:clamp(40px,8vw,60px);margin:30px 0;display:flex;justify-content:center;gap:15px;}
+    .rose-icon{display:inline-block;animation:roseGrow 0.6s ease-out forwards;opacity:0;}
+    .rose-icon:nth-child(1){animation-delay:0.2s;}
+    .rose-icon:nth-child(2){animation-delay:0.4s;}
+    .rose-icon:nth-child(3){animation-delay:0.6s;}
+    .rose-icon:nth-child(4){animation-delay:0.8s;}
+    .rose-icon:nth-child(5){animation-delay:1s;}
+    @keyframes roseGrow{from{opacity:0;transform:scale(0) rotate(-180deg);}to{opacity:1;transform:scale(1) rotate(0deg);}}
+    .confetti-piece{position:fixed;width:10px;height:10px;background:#ffd700;top:-10px;opacity:0;animation:confettiFall 4s ease-out forwards;z-index:9999;}
+    @keyframes confettiFall{0%{opacity:1;transform:translateY(0) rotate(0deg);}100%{opacity:0;transform:translateY(100vh) rotate(720deg);}}
+    .glow{position:absolute;width:300px;height:300px;background:radial-gradient(circle,rgba(255,107,157,0.3) 0%,transparent 70%);border-radius:50%;pointer-events:none;animation:glowPulse 4s ease-in-out infinite;z-index:-1;}
+    @keyframes glowPulse{0%,100%{opacity:0.3;transform:scale(1);}50%{opacity:0.6;transform:scale(1.2);}}
+    
+    /* Typewriter effect for success letter */
+    .typewriter-line{
+        overflow:hidden;
+        white-space:nowrap;
+        border-right:.15em solid rgba(255,215,0,0.6);
+        display:inline-block;
+        animation:blink-caret .75s step-end infinite;
+    }
+    @keyframes blink-caret{50%{border-color:transparent;}}
+    
+    .heart-text{font-family:'Playfair Display',serif;font-size:clamp(24px,4vw,36px);color:#ffd4e5;margin:25px 0;font-weight:500;}
+    .us-pic{width:90%;max-width:400px;margin:30px auto 20px;border-radius:20px;box-shadow:0 0 50px rgba(255,20,147,0.3);display:block;}
+    
+    /* Hide image initially, show after letter */
+    .us-pic.hidden{display:none;}
+    
+    /* Hide upside down pic by default */
+    .upside-down-pic{display:none !important;}
+    
+    /* Show upside down pic only in stranger things theme */
+    body.stranger-things .upside-down-pic.hidden{display:none !important;}
+    body.stranger-things .upside-down-pic:not(.hidden){display:block !important;}
+    body.stranger-things .normal-pic{display:none !important;}
+    
+    /* Upside down pic has red glow */
+    body.stranger-things .upside-down-pic{
+        box-shadow:0 0 50px rgba(255,0,0,0.6);
+        border:2px solid rgba(255,0,0,0.3);
+    }
+    
+    /* Stranger Things Theme Button */
+    .theme-toggle-btn{
+        padding:18px 40px;
+        font-size:clamp(14px,2.5vw,18px);
+        font-weight:500;
+        font-family:'Montserrat',sans-serif;
+        letter-spacing:0.5px;
+        border:2px solid rgba(255,215,0,0.4);
+        border-radius:50px;
+        cursor:pointer;
+        background:rgba(255,255,255,0.05);
+        color:#ffd700;
+        backdrop-filter:blur(10px);
+        transition:all 0.3s ease;
+        text-transform:uppercase;
+        margin:30px auto 20px;
+        display:none;
+    }
+    .theme-toggle-btn.show{
+        display:inline-block;
+    }
+    .theme-toggle-btn:hover{
+        background:rgba(255,215,0,0.1);
+        transform:scale(1.05);
+        box-shadow:0 0 20px rgba(255,215,0,0.3);
+    }
+    
+    /* Stranger Things Theme Styles */
+    body.stranger-things{
+        background: linear-gradient(135deg, #0a0a0a 0%, #1a0d0d 25%, #0d1a1a 50%, #1a0d0d 75%, #0a0a0a 100%);
+        animation: stFlicker 0.15s infinite alternate;
+    }
+    @keyframes stFlicker{
+        0%, 100%{filter:brightness(1) contrast(1.1);}
+        50%{filter:brightness(0.95) contrast(1.15);}
+    }
+    
+    body.stranger-things .container{
+        background:rgba(0,0,0,0.7);
+        border:2px solid rgba(255,0,0,0.3);
+        box-shadow:0 30px 90px rgba(139,0,0,0.6),0 0 100px rgba(255,0,0,0.2), inset 0 0 80px rgba(139,0,0,0.1);
+    }
+    
+    body.stranger-things .corner-decoration{
+        border-color:rgba(255,0,0,0.4);
+    }
+    
+    body.stranger-things .heart-icon{
+        background:linear-gradient(135deg,#ff0000 0%,#8b0000 50%,#ff4500 100%);
+        -webkit-background-clip:text;
+        -webkit-text-fill-color:transparent;
+        filter:drop-shadow(0 0 30px rgba(255,0,0,0.8));
+        animation:stHeartPulse 2s ease-in-out infinite;
+    }
+    @keyframes stHeartPulse{
+        0%,100%{transform:scale(1);filter:drop-shadow(0 0 30px rgba(255,0,0,0.8));}
+        50%{transform:scale(1.15);filter:drop-shadow(0 0 60px rgba(255,0,0,1));}
+    }
+    
+    body.stranger-things h1{
+        background:linear-gradient(135deg,#ff0000 0%,#8b0000 50%,#ff4500 100%);
+        -webkit-background-clip:text;
+        -webkit-text-fill-color:transparent;
+        text-shadow:0 0 40px rgba(255,0,0,0.5);
+        animation:stTextFlicker 3s infinite;
+    }
+    @keyframes stTextFlicker{
+        0%, 100%{opacity:1;}
+        50%{opacity:0.8;}
+        75%{opacity:1;}
+        80%{opacity:0.9;}
+    }
+    
+    body.stranger-things .subtitle,
+    body.stranger-things .question,
+    body.stranger-things .love-message p,
+    body.stranger-things .success-subtext{
+        color:#ff6b6b;
+        text-shadow:0 0 10px rgba(255,0,0,0.3);
+    }
+    
+    body.stranger-things .love-message{
+        background:linear-gradient(135deg,rgba(139,0,0,0.2) 0%,rgba(255,0,0,0.1) 100%);
+        border:1px solid rgba(255,0,0,0.3);
+    }
+    
+    body.stranger-things .love-message .highlight{
+        color:#ff0000;
+        text-shadow:0 0 20px rgba(255,0,0,0.8);
+    }
+    
+    body.stranger-things .divider{
+        background:linear-gradient(90deg,transparent,#ff0000,transparent);
+    }
+    body.stranger-things .divider::before{
+        color:#ff0000;
+        text-shadow:0 0 20px rgba(255,0,0,0.8);
+    }
+    
+    body.stranger-things .yes-btn{
+        background:linear-gradient(135deg,#8b0000 0%,#ff0000 50%,#8b0000 100%);
+        box-shadow:0 10px 30px rgba(255,0,0,0.6),0 0 50px rgba(255,0,0,0.4);
+        border:2px solid rgba(255,0,0,0.5);
+    }
+    body.stranger-things .yes-btn:hover{
+        box-shadow:0 15px 40px rgba(255,0,0,0.8),0 0 80px rgba(255,0,0,0.6);
+    }
+    
+    body.stranger-things .particle{
+        background:radial-gradient(circle,#ff0000 0%,transparent 70%);
+    }
+    
+    body.stranger-things .rose-petal,
+    body.stranger-things .flower{
+        filter:hue-rotate(180deg) saturate(2);
+    }
+    
+    body.stranger-things .success-message{
+        background:linear-gradient(135deg,#ff0000 0%,#8b0000 50%,#ff4500 100%);
+        -webkit-background-clip:text;
+        -webkit-text-fill-color:transparent;
+    }
+    
+    body.stranger-things .heart-text{
+        color:#ff6b6b;
+        text-shadow:0 0 15px rgba(255,0,0,0.4);
+    }
+    
+    body.stranger-things .glow{
+        background:radial-gradient(circle,rgba(255,0,0,0.4) 0%,transparent 70%);
+    }
+</style>
+</head>
+<body>
+<!-- Audio for Kate Bush - Running Up That Hill -->
+<audio id="strangerThingsAudio" loop preload="auto">
+    <source src="running-up-that-hill.mp3" type="audio/mpeg">
+</audio>
+
+<div class="particles" id="particles"></div>
+<div class="rose-bg" id="roseBg"></div>
+<div class="flower-bg" id="flowerBg"></div>
+
+<div class="container">
+    <div class="glow"></div>
+    <div class="corner-decoration top-left"></div>
+    <div class="corner-decoration top-right"></div>
+    <div class="corner-decoration bottom-left"></div>
+    <div class="corner-decoration bottom-right"></div>
+    <div class="heart-icon">🌼</div>
+    <h1>Will You Be My Valentine?</h1>
+    <div class="subtitle">Tomorrow · February 14th</div>
+
+    <div class="love-message" id="loveMessage">
+        <p>In a world full of ordinary moments,</p>
+        <p>you are my <span class="highlight">extraordinary</span>.</p>
+        <p>Every smile, every laugh, every second with you</p>
+        <p>feels like the most <span class="highlight">precious gift</span>.</p>
+    </div>
+
+    <div class="divider"></div>
+    <div class="question">
+        Would you make this Valentine's Day unforgettable<br>by being mine? 🌹
+    </div>
+
+    <div class="button-container" id="buttonContainer">
+        <button class="yes-btn" onclick="celebrateYes()">Yes, Forever! ✨</button>
+        <button class="no-btn" onclick="moveAwayButton(this)" id="noBtn">Maybe Not...</button>
+    </div>
+
+    <div class="heart-text">Every moment with you is a treasure, my love 💖</div>
+
+    <div class="success-container" id="successContainer">
+        <div class="success-message">
+            You've Just Made Me<br>The Happiest Person Alive! 💫
+        </div>
+        <div class="roses">
+            <span class="rose-icon">🌹</span>
+            <span class="rose-icon">🌹</span>
+            <span class="rose-icon">🌹</span>
+            <span class="rose-icon">🌹</span>
+            <span class="rose-icon">🌹</span>
+        </div>
+        
+        <!-- Typewriter letter container -->
+        <div class="love-message" id="typedLetter" style="margin-top:40px;"></div>
+        
+        <div class="success-subtext">
+            Tomorrow is going to be absolutely magical.<br>
+            I can't wait to celebrate with the most amazing person I know.<br>
+            <span class="highlight">Thank you for making me the luckiest. 💕</span>
+        </div>
+    </div>
+    
+    <!-- Images - swap between themes -->
+    <img src="us.jpg" alt="Us" class="us-pic hidden normal-pic" id="usPic">
+    <img src="us-upside-down.jpg" alt="Us in the Upside Down" class="us-pic hidden upside-down-pic" id="usPicUpside">
+    
+    <!-- Theme Toggle Button - appears after image -->
+    <button class="theme-toggle-btn" id="themeBtn" onclick="toggleTheme()">Welcome to the Upside Down 🔥</button>
+</div>
+
+<script>
+function createParticles(){
+    const particlesContainer=document.getElementById('particles');
+    for(let i=0;i<50;i++){
+        setTimeout(()=>{
+            const particle=document.createElement('div');
+            particle.className='particle';
+            particle.style.left=Math.random()*100+'%';
+            particle.style.animationDuration=(Math.random()*10+15)+'s';
+            particle.style.animationDelay=Math.random()*5+'s';
+            particlesContainer.appendChild(particle);
+        },i*100);
+    }
+}
+
+function createRosePetal(){
+    const roseBg=document.getElementById('roseBg');
+    const petal=document.createElement('div');
+    petal.className='rose-petal';
+    petal.innerHTML='🌹';
+    petal.style.left=Math.random()*100+'%';
+    petal.style.animationDuration=(Math.random()*5+10)+'s';
+    petal.style.animationDelay=Math.random()*3+'s';
+    petal.style.fontSize=(Math.random()*20+30)+'px';
+    roseBg.appendChild(petal);
+    setTimeout(()=>petal.remove(),15000);
+}
+
+function createFlower(){
+    const flowerBg=document.getElementById('flowerBg');
+    const flower=document.createElement('div');
+    flower.classList.add('flower');
+    const flowers=["🌸","🌺","🌼","💐","🌹"];
+    flower.innerHTML=flowers[Math.floor(Math.random()*flowers.length)];
+    flower.style.left=Math.random()*100+'vw';
+    flower.style.fontSize=(Math.random()*20+20)+'px';
+    flowerBg.appendChild(flower);
+    setTimeout(()=>flower.remove(),8000);
+}
+
+createParticles();
+setInterval(createRosePetal,2000);
+setInterval(createFlower,500);
+
+let escapeCount=0;
+const noMessages=["Maybe Not...","Are You Sure? 🥺","Think Again? 💭","Please Reconsider 🌹","One More Chance? ✨","My Heart Breaks 💔","Don't Do This 🥹"];
+function moveAwayButton(button){
+    escapeCount++;
+    if(escapeCount<noMessages.length) button.textContent=noMessages[escapeCount];
+    const maxX=window.innerWidth-250;
+    const maxY=window.innerHeight-80;
+    const randomX=Math.random()*(maxX-50)+50;
+    const randomY=Math.random()*(maxY-50)+50;
+    button.style.position='fixed';
+    button.style.left=randomX+'px';
+    button.style.top=randomY+'px';
+    button.style.transition='all 0.4s cubic-bezier(0.4,0,0.2,1)';
+    button.style.zIndex='9999';
+    const yesBtn=document.querySelector('.yes-btn');
+    const currentSize=parseFloat(window.getComputedStyle(yesBtn).fontSize);
+    yesBtn.style.fontSize=(currentSize+1.5)+'px';
+    const currentPadding=parseFloat(window.getComputedStyle(yesBtn).padding);
+    yesBtn.style.padding=(currentPadding+2)+'px '+(currentPadding*2.5+4)+'px';
+}
+
+// Typewriter effect function
+function typewriterEffect(element, lines, speed = 50) {
+    let lineIndex = 0;
+    let charIndex = 0;
+    let currentLine;
+
+    function typeLine() {
+        if (lineIndex < lines.length) {
+            if (charIndex === 0) {
+                currentLine = document.createElement('p');
+                currentLine.innerHTML = '<span class="typewriter-line"></span>';
+                element.appendChild(currentLine);
+            }
+
+            const span = currentLine.querySelector('.typewriter-line');
+            const fullText = lines[lineIndex];
+            
+            if (charIndex < fullText.length) {
+                span.textContent += fullText.charAt(charIndex);
+                charIndex++;
+                setTimeout(typeLine, speed);
+            } else {
+                span.style.borderRight = 'none'; // Remove cursor from completed line
+                lineIndex++;
+                charIndex = 0;
+                setTimeout(typeLine, 300); // Pause before next line
+            }
+        } else {
+            // Show images and theme button after letter is complete
+            setTimeout(() => {
+                document.getElementById('usPic').classList.remove('hidden');
+                document.getElementById('usPicUpside').classList.remove('hidden');
+                document.getElementById('themeBtn').classList.add('show');
+            }, 500);
+        }
+    }
+
+    typeLine();
+}
+
+function celebrateYes(){
+    const buttonContainer=document.getElementById('buttonContainer');
+    const successContainer=document.getElementById('successContainer');
+    const messages=document.querySelectorAll('.love-message:not(#typedLetter), .divider, .question, .subtitle');
+    const heartText = document.querySelector('.heart-text');
+    const mainTitle = document.querySelector('h1');
+    
+    buttonContainer.style.display='none';
+    messages.forEach(msg=>msg.style.display='none');
+    heartText.style.display='none';
+    mainTitle.style.display='none';
+    successContainer.style.display='block';
+
+    const colors=['#ffd700','#ff6b9d','#ff1493','#ffa07a','#ffb6d9'];
+    for(let i=0;i<150;i++){
+        setTimeout(()=>{
+            const confetti=document.createElement('div');
+            confetti.className='confetti-piece';
+            confetti.style.left=Math.random()*100+'%';
+            confetti.style.background=colors[Math.floor(Math.random()*colors.length)];
+            confetti.style.width=(Math.random()*8+5)+'px';
+            confetti.style.height=(Math.random()*8+5)+'px';
+            confetti.style.animationDelay=Math.random()*0.3+'s';
+            confetti.style.animationDuration=(Math.random()*2+3)+'s';
+            document.body.appendChild(confetti);
+            setTimeout(()=>confetti.remove(),5000);
+        },i*20);
+    }
+    
+    const heart=document.querySelector('.heart-icon');
+    heart.style.fontSize='140px';
+    heart.style.transform='scale(1.2)';
+    
+    // Start typewriter effect after a short delay
+    setTimeout(() => {
+        const typedLetter = document.getElementById('typedLetter');
+        const letterLines = [
+            "In a world full of ordinary moments,",
+            "you are my extraordinary.",
+            "Every smile, every laugh, every second with you",
+            "feels like the most precious gift.",
+            "You light up my life in ways I never knew possible.",
+            "Thank you for saying yes and making this the best day ever! 💖"
+        ];
+        typewriterEffect(typedLetter, letterLines, 60);
+    }, 1500);
+}
+
+document.getElementById('noBtn').addEventListener('click',function(e){e.preventDefault();});
+
+// Stranger Things Theme Toggle
+let isStrangerThings = false;
+function toggleTheme(){
+    const body = document.body;
+    const audio = document.getElementById('strangerThingsAudio');
+    const btn = document.querySelector('.theme-toggle-btn');
+    
+    isStrangerThings = !isStrangerThings;
+    
+    if(isStrangerThings){
+        body.classList.add('stranger-things');
+        btn.textContent = 'Back to Normal 💖';
+        
+        // Check if audio can load
+        audio.load(); // Force reload of audio source
+        audio.currentTime = 0;
+        audio.volume = 0.5;
+        
+        // Add error event listener
+        audio.onerror = function(e) {
+            console.error('Audio error:', e);
+            console.error('Audio source:', audio.src);
+            console.error('Current src:', audio.currentSrc);
+            alert('Audio file not found! \n\nPlease check:\n1. File is named exactly: running-up-that-hill.mp3\n2. File is in the same folder as valentine.html\n3. File is a valid MP3 audio file\n\nCurrent path looking for: ' + audio.currentSrc);
+        };
+        
+        const playPromise = audio.play();
+        if (playPromise !== undefined) {
+            playPromise.then(() => {
+                console.log('✅ Audio playing successfully!');
+            }).catch(error => {
+                console.error('❌ Play failed:', error);
+                // Try alternative: check if it's a path issue
+                if(error.name === 'NotSupportedError') {
+                    alert('Audio format not supported by your browser. Try converting the file to MP3 format.');
+                } else if(error.name === 'NotAllowedError') {
+                    alert('Browser blocked audio playback. Click the button again to play.');
+                } else {
+                    alert('Could not play audio. Check browser console (F12) for details.\n\nMake sure "running-up-that-hill.mp3" is in the same folder as this HTML file.');
+                }
+            });
+        }
+    } else {
+        body.classList.remove('stranger-things');
+        btn.textContent = 'Welcome to the Upside Down 🔥';
+        audio.pause();
+        audio.currentTime = 0;
+    }
+}
+</script>
+</body>
+</html>
