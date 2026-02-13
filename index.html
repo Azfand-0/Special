@@ -281,6 +281,11 @@
 </style>
 </head>
 <body>
+<!-- Audio for normal romantic theme -->
+<audio id="normalAudio" loop preload="auto">
+    <source src="normal-theme.mp3" type="audio/mpeg">
+</audio>
+
 <!-- Audio for Kate Bush - Running Up That Hill -->
 <audio id="strangerThingsAudio" loop preload="auto">
     <source src="running-up-that-hill.mp3" type="audio/mpeg">
@@ -341,12 +346,12 @@
         </div>
     </div>
     
-    <!-- Images - swap between themes -->
     <!-- Stranger Things message - appears above image in upside down mode -->
-    <div class="upside-down-message" id="upsideDownMessage" style="display:none;">
-        <div class="love-message" style="margin-bottom:30px;"></div>
+    <div class="upside-down-message" id="upsideDownMessage" style="display:none; margin-top: 40px;">
+        <div class="love-message" id="upsideDownContent" style="margin-bottom:30px;"></div>
     </div>
     
+    <!-- Images - swap between themes -->
     <img src="us.jpg" alt="Us" class="us-pic hidden normal-pic" id="usPic">
     <img src="us-upside-down.jpg" alt="Us in the Upside Down" class="us-pic hidden upside-down-pic" id="usPicUpside">
     
@@ -403,15 +408,38 @@ const noMessages=["Maybe Not...","Are You Sure? 🥺","Think Again? 💭","Pleas
 function moveAwayButton(button){
     escapeCount++;
     if(escapeCount<noMessages.length) button.textContent=noMessages[escapeCount];
-    const maxX=window.innerWidth-250;
-    const maxY=window.innerHeight-80;
-    const randomX=Math.random()*(maxX-50)+50;
-    const randomY=Math.random()*(maxY-50)+50;
+    
+    // Get viewport dimensions
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+    
+    // Get button dimensions
+    const buttonRect = button.getBoundingClientRect();
+    const buttonWidth = buttonRect.width;
+    const buttonHeight = buttonRect.height;
+    
+    // Set safe boundaries (keep button well within viewport)
+    const padding = 50; // Increased padding
+    const minX = padding;
+    const maxX = viewportWidth - buttonWidth - padding;
+    const minY = 100; // Start well below top
+    const maxY = viewportHeight - buttonHeight - padding;
+    
+    // Generate random position within safe boundaries
+    let randomX = Math.random() * (maxX - minX) + minX;
+    let randomY = Math.random() * (maxY - minY) + minY;
+    
+    // Ensure values are positive and within bounds
+    randomX = Math.max(minX, Math.min(randomX, maxX));
+    randomY = Math.max(minY, Math.min(randomY, maxY));
+    
     button.style.position='fixed';
     button.style.left=randomX+'px';
     button.style.top=randomY+'px';
     button.style.transition='all 0.4s cubic-bezier(0.4,0,0.2,1)';
     button.style.zIndex='9999';
+    
+    // Make Yes button bigger
     const yesBtn=document.querySelector('.yes-btn');
     const currentSize=parseFloat(window.getComputedStyle(yesBtn).fontSize);
     yesBtn.style.fontSize=(currentSize+1.5)+'px';
@@ -553,20 +581,61 @@ function celebrateYes(){
 
 document.getElementById('noBtn').addEventListener('click',function(e){e.preventDefault();});
 
+// Auto-play normal theme music on first user interaction
+let musicStarted = false;
+function startNormalMusic() {
+    if (!musicStarted) {
+        const normalAudio = document.getElementById('normalAudio');
+        normalAudio.volume = 0.5;
+        normalAudio.play().then(() => {
+            console.log('✅ Normal theme music started!');
+            musicStarted = true;
+        }).catch(error => {
+            console.log('❌ Auto-play blocked, will try on next interaction:', error);
+        });
+    }
+}
+
+// Try to start music on any user interaction
+document.addEventListener('click', startNormalMusic, { once: true });
+document.addEventListener('touchstart', startNormalMusic, { once: true });
+
 // Stranger Things Theme Toggle
 let isStrangerThings = false;
 function toggleTheme(){
+    console.log('Toggle theme clicked!');
     const body = document.body;
-    const audio = document.getElementById('strangerThingsAudio');
+    const normalAudio = document.getElementById('normalAudio');
+    const strangerAudio = document.getElementById('strangerThingsAudio');
     const btn = document.querySelector('.theme-toggle-btn');
     const upsideDownMsg = document.getElementById('upsideDownMessage');
-    const upsideDownContent = upsideDownMsg.querySelector('.love-message');
+    const upsideDownContent = document.getElementById('upsideDownContent');
+    
+    console.log('Elements found:', {upsideDownMsg, upsideDownContent});
     
     isStrangerThings = !isStrangerThings;
     
     if(isStrangerThings){
+        console.log('Switching to Stranger Things theme');
         body.classList.add('stranger-things');
         btn.textContent = 'Back to Normal 💖';
+        
+        // Stop normal music and start stranger things music
+        normalAudio.pause();
+        normalAudio.currentTime = 0;
+        
+        strangerAudio.load();
+        strangerAudio.currentTime = 0;
+        strangerAudio.volume = 0.5;
+        
+        const stPlayPromise = strangerAudio.play();
+        if (stPlayPromise !== undefined) {
+            stPlayPromise.then(() => {
+                console.log('✅ Stranger Things audio playing!');
+            }).catch(error => {
+                console.error('❌ Stranger Things audio failed:', error);
+            });
+        }
         
         // Show and type upside down message
         upsideDownMsg.style.display = 'block';
@@ -581,43 +650,30 @@ function toggleTheme(){
             "You and me against the darkness. 🔥"
         ];
         
+        console.log('Starting typewriter with lines:', upsideDownLines);
         strangerThingsTypewriter(upsideDownContent, upsideDownLines, 70);
         
-        // Check if audio can load
-        audio.load(); // Force reload of audio source
-        audio.currentTime = 0;
-        audio.volume = 0.5;
-        
-        // Add error event listener
-        audio.onerror = function(e) {
-            console.error('Audio error:', e);
-            console.error('Audio source:', audio.src);
-            console.error('Current src:', audio.currentSrc);
-            alert('Audio file not found! \n\nPlease check:\n1. File is named exactly: running-up-that-hill.mp3\n2. File is in the same folder as valentine.html\n3. File is a valid MP3 audio file\n\nCurrent path looking for: ' + audio.currentSrc);
-        };
-        
-        const playPromise = audio.play();
-        if (playPromise !== undefined) {
-            playPromise.then(() => {
-                console.log('✅ Audio playing successfully!');
-            }).catch(error => {
-                console.error('❌ Play failed:', error);
-                // Try alternative: check if it's a path issue
-                if(error.name === 'NotSupportedError') {
-                    alert('Audio format not supported by your browser. Try converting the file to MP3 format.');
-                } else if(error.name === 'NotAllowedError') {
-                    alert('Browser blocked audio playback. Click the button again to play.');
-                } else {
-                    alert('Could not play audio. Check browser console (F12) for details.\n\nMake sure "running-up-that-hill.mp3" is in the same folder as this HTML file.');
-                }
-            });
-        }
     } else {
+        console.log('Switching back to normal theme');
         body.classList.remove('stranger-things');
         btn.textContent = 'Welcome to the Upside Down 🔥';
         upsideDownMsg.style.display = 'none';
-        audio.pause();
-        audio.currentTime = 0;
+        
+        // Stop stranger things music and restart normal music
+        strangerAudio.pause();
+        strangerAudio.currentTime = 0;
+        
+        normalAudio.currentTime = 0;
+        normalAudio.volume = 0.5;
+        
+        const normalPlayPromise = normalAudio.play();
+        if (normalPlayPromise !== undefined) {
+            normalPlayPromise.then(() => {
+                console.log('✅ Normal audio playing!');
+            }).catch(error => {
+                console.error('❌ Normal audio failed:', error);
+            });
+        }
     }
 }
 </script>
