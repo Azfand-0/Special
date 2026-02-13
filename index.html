@@ -53,6 +53,25 @@
         box-shadow:0 30px 90px rgba(255,20,147,0.4),0 0 100px rgba(255,215,0,0.1), inset 0 0 80px rgba(255,255,255,0.02);
         text-align:center;position:relative;z-index:10;animation:fadeInUp 1.2s ease-out;
     }
+    /* Mobile responsiveness */
+    @media (max-width: 768px) {
+        .container {
+            padding: 40px 25px;
+            border-radius: 30px;
+        }
+        .love-message {
+            padding: 25px 20px;
+            margin: 30px 0;
+        }
+    }
+    @media (max-width: 480px) {
+        .container {
+            padding: 30px 20px;
+        }
+        .love-message {
+            padding: 20px 15px;
+        }
+    }
     @keyframes fadeInUp{from{opacity:0;transform:translateY(60px);}to{opacity:1;transform:translateY(0);}}
     .corner-decoration{position:absolute;width:80px;height:80px;border:2px solid rgba(255,215,0,0.3);pointer-events:none;}
     .corner-decoration.top-left{top:-2px;left:-2px;border-right:none;border-bottom:none;border-radius:40px 0 0 0;}
@@ -66,7 +85,7 @@
     .love-message{background:linear-gradient(135deg,rgba(255,215,0,0.08) 0%,rgba(255,182,217,0.08) 100%);border:1px solid rgba(255,215,0,0.25);border-radius:25px;padding:35px 30px;margin:40px 0;position:relative;overflow:hidden;}
     .love-message::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.1),transparent);animation:shimmer 3s infinite;}
     @keyframes shimmer{0%{left:-100%;}100%{left:100%;}}
-    .love-message p{font-family:'Cormorant Garamond',serif;font-size:clamp(16px,2.5vw,22px);color:#ffe4f0;line-height:1.8;margin:15px 0;font-weight:400;position:relative;z-index:1;}
+    .love-message p{font-family:'Cormorant Garamond',serif;font-size:clamp(16px,2.5vw,22px);color:#ffe4f0;line-height:1.8;margin:15px 0;font-weight:400;position:relative;z-index:1;word-wrap:break-word;overflow-wrap:break-word;}
     .love-message .highlight{color:#ffd700;font-weight:500;text-shadow:0 0 20px rgba(255,215,0,0.5);}
     .divider{width:150px;height:2px;background:linear-gradient(90deg,transparent,#ffd700,transparent);margin:30px auto;position:relative;}
     .divider::before{content:'✦';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#ffd700;font-size:20px;background:#1a0a0f;padding:0 10px;}
@@ -99,10 +118,12 @@
     /* Typewriter effect for success letter */
     .typewriter-line{
         overflow:hidden;
-        white-space:nowrap;
+        white-space:normal;
         border-right:.15em solid rgba(255,215,0,0.6);
-        display:inline-block;
+        display:inline;
         animation:blink-caret .75s step-end infinite;
+        word-wrap:break-word;
+        overflow-wrap:break-word;
     }
     @keyframes blink-caret{50%{border-color:transparent;}}
     
@@ -321,6 +342,11 @@
     </div>
     
     <!-- Images - swap between themes -->
+    <!-- Stranger Things message - appears above image in upside down mode -->
+    <div class="upside-down-message" id="upsideDownMessage" style="display:none;">
+        <div class="love-message" style="margin-bottom:30px;"></div>
+    </div>
+    
     <img src="us.jpg" alt="Us" class="us-pic hidden normal-pic" id="usPic">
     <img src="us-upside-down.jpg" alt="Us in the Upside Down" class="us-pic hidden upside-down-pic" id="usPicUpside">
     
@@ -403,6 +429,9 @@ function typewriterEffect(element, lines, speed = 50) {
         if (lineIndex < lines.length) {
             if (charIndex === 0) {
                 currentLine = document.createElement('p');
+                currentLine.style.whiteSpace = 'normal';
+                currentLine.style.wordWrap = 'break-word';
+                currentLine.style.overflowWrap = 'break-word';
                 currentLine.innerHTML = '<span class="typewriter-line"></span>';
                 element.appendChild(currentLine);
             }
@@ -427,6 +456,47 @@ function typewriterEffect(element, lines, speed = 50) {
                 document.getElementById('usPicUpside').classList.remove('hidden');
                 document.getElementById('themeBtn').classList.add('show');
             }, 500);
+        }
+    }
+
+    typeLine();
+}
+
+// Stranger Things typewriter for upside down message
+function strangerThingsTypewriter(element, lines, speed = 70) {
+    let lineIndex = 0;
+    let charIndex = 0;
+    let currentLine;
+
+    function typeLine() {
+        if (lineIndex < lines.length) {
+            if (charIndex === 0) {
+                currentLine = document.createElement('p');
+                currentLine.style.whiteSpace = 'normal';
+                currentLine.style.wordWrap = 'break-word';
+                currentLine.style.overflowWrap = 'break-word';
+                currentLine.innerHTML = '<span class="typewriter-line" style="border-color:rgba(255,0,0,0.6);"></span>';
+                element.appendChild(currentLine);
+            }
+
+            const span = currentLine.querySelector('.typewriter-line');
+            const fullText = lines[lineIndex];
+            
+            if (charIndex < fullText.length) {
+                // Add flicker effect randomly
+                if (Math.random() > 0.9) {
+                    span.style.opacity = '0.7';
+                    setTimeout(() => span.style.opacity = '1', 50);
+                }
+                span.textContent += fullText.charAt(charIndex);
+                charIndex++;
+                setTimeout(typeLine, speed);
+            } else {
+                span.style.borderRight = 'none';
+                lineIndex++;
+                charIndex = 0;
+                setTimeout(typeLine, 400);
+            }
         }
     }
 
@@ -489,12 +559,29 @@ function toggleTheme(){
     const body = document.body;
     const audio = document.getElementById('strangerThingsAudio');
     const btn = document.querySelector('.theme-toggle-btn');
+    const upsideDownMsg = document.getElementById('upsideDownMessage');
+    const upsideDownContent = upsideDownMsg.querySelector('.love-message');
     
     isStrangerThings = !isStrangerThings;
     
     if(isStrangerThings){
         body.classList.add('stranger-things');
         btn.textContent = 'Back to Normal 💖';
+        
+        // Show and type upside down message
+        upsideDownMsg.style.display = 'block';
+        upsideDownContent.innerHTML = ''; // Clear previous content
+        
+        const upsideDownLines = [
+            "We are together in everything,",
+            "Partners in crime through thick and thin.",
+            "In this upside down world,",
+            "We will face the monsters together,",
+            "No matter what comes our way.",
+            "You and me against the darkness. 🔥"
+        ];
+        
+        strangerThingsTypewriter(upsideDownContent, upsideDownLines, 70);
         
         // Check if audio can load
         audio.load(); // Force reload of audio source
@@ -528,6 +615,7 @@ function toggleTheme(){
     } else {
         body.classList.remove('stranger-things');
         btn.textContent = 'Welcome to the Upside Down 🔥';
+        upsideDownMsg.style.display = 'none';
         audio.pause();
         audio.currentTime = 0;
     }
